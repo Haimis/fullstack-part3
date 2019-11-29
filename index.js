@@ -8,8 +8,10 @@ const cors = require('cors')
 
 
 app.use(bodyParser.json())
-app.use(morgan(':method :url :status :res[content-length] :response-time ms :content'))
 app.use(cors())
+app.use(express.static('build'))
+app.use(morgan(':method :url :status :res[content-length] :response-time ms :content'))
+
 
 let persons = [
     {
@@ -37,22 +39,23 @@ let persons = [
     }
 ]
 
-app.get('/api/persons', (req, res) => {
-    res.send(persons)
-    morgan.token('content', () => {return JSON.stringify(req.body)})
+app.get('/api/persons', (request, response) => {
+    response.send(persons)
+    morgan.token('content', () => {return JSON.stringify(request.body)})
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', (request, response) => {
     const contacts = persons.length
     const date = Date()
-    res.send(`Phonebook has ${contacts} contacts<br>
+    morgan.token('content', () => {return JSON.stringify(request.body)})
+    response.send(`Phonebook has ${contacts} contacts<br>
     ${date}`)
 })
 
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
-
+    morgan.token('content', () => {return JSON.stringify(person)})
     if (person) {
         response.json(person)
     } else {
@@ -63,9 +66,7 @@ app.get('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const randomId = Math.floor(Math.random() * Math.floor(1000000))
     const body = request.body
-    morgan.token('content', () => {return JSON.stringify(body)})
-
-
+    morgan.token('content', () => {return (JSON.stringify(body))})
    if (!body.name) {
         return response.status(400).json({
             error: 'name missing'
@@ -95,9 +96,9 @@ app.post('/api/persons', (request, response) => {
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
-
     response.status(204).end()
 })
+
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
