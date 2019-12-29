@@ -1,5 +1,6 @@
+/* eslint-disable no-undef */
 const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator');
+const uniqueValidator = require('mongoose-unique-validator')
 
 if ( process.argv.length<3 ) {
     console.log('give password as argument')
@@ -19,7 +20,7 @@ const personSchema = new mongoose.Schema({
     name: { type:String, required: true, unique: true },
     number: { type:String, required: true, unique: true }
 })
-personSchema.plugin(uniqueValidator);
+personSchema.plugin(uniqueValidator)
 
 const Person = mongoose.model('Person', personSchema)
 
@@ -29,16 +30,16 @@ const person = new Person({
 })
 
 if (process.argv.length === 5) {
-    person.save().then(response => {
-        console.log(`added ${name} number ${number} to phonebook`);
-        mongoose.connection.close();
+    person.save().then(() => {
+        console.log(`added ${name} number ${number} to phonebook`)
+        mongoose.connection.close()
     })
 } else {
     Person.find({}).then(result => {
         console.log('phonebook:')
         result.forEach(person => {
-          console.log(`${person.name} ${person.number}`)
+            console.log(`${person.name} ${person.number}`)
         })
         mongoose.connection.close()
-      })
+    })
 }

@@ -1,4 +1,6 @@
+/* eslint-disable no-undef */
 require('dotenv').config()
+
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -15,9 +17,9 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :c
 app.get('/api/persons', (request, response, next) => {
     Person.find({}).then(result => {
         response.json(result.map(person => person.toJSON()))
-      })
-      .catch(error => next(error))
-      morgan.token('content', () => {return JSON.stringify(request.body)})    
+    })
+        .catch(error => next(error))
+    morgan.token('content', () => {return JSON.stringify(request.body)})    
 })
 
 
@@ -28,7 +30,7 @@ app.get('/info', (request, response, next) => {
         response.send(`Phonebook has ${result.length} contacts<br>
         ${date}`)
     })
-    .catch(error => next(error))
+        .catch(error => next(error))
 
 
 })
@@ -43,7 +45,7 @@ app.get('/api/persons/:id', (request, response, next) => {
         }
         
     })
-    .catch(error => next(error))
+        .catch(error => next(error))
     
     
     
@@ -52,7 +54,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
     morgan.token('content', () => {return (JSON.stringify(body))})
-   if (!body.name) {
+    if (!body.name) {
         return response.status(400).json({
             error: 'name missing'
         })
@@ -68,7 +70,7 @@ app.post('/api/persons', (request, response, next) => {
         person.save().then(savedPerson => {
             response.json(savedPerson.toJSON())
         })
-        .catch(error => next(error))
+            .catch(error => next(error))
     }
     
 
@@ -76,31 +78,31 @@ app.post('/api/persons', (request, response, next) => {
 
 app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body
-    
+
     const person = {
         name: body.name,
         number: body.number
     }
 
     Person.findByIdAndUpdate(request.params.id, person, { new: true })
-    .then(updatedNote => {
-        response.json(updatedNote.toJSON())
-    })
-    .catch(error => next(error))
+        .then(updatedNote => {
+            response.json(updatedNote.toJSON())
+        })
+        .catch(error => next(error))
     morgan.token('content', () => {return (JSON.stringify(body))})
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
-    .then(result => {
-        response.status(204).end()
-    })
-    .catch(error => next(error))
+        .then(() => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
-  }
+}
   
 app.use(unknownEndpoint)
 
@@ -109,9 +111,9 @@ const errorHandler = (error, request, response, next) => {
     
     if (error.name === 'CastError' && error.kind == 'ObjectId') {
         return response.status(400).send({ error: 'malformatted id' })
-      } else if (error.name === 'ValidationError') {
+    } else if (error.name === 'ValidationError') {
         return response.status(400).json({ error: error.message })
-      }
+    }
 
     next(error)
 }
