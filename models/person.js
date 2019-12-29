@@ -12,12 +12,13 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
     })
     .catch((error) => {
         console.log('error connecting to MongoDB', error.message)
-})
+    })
 
 const personSchema = new mongoose.Schema({
     name: { type:String, required: true, unique: true/*, minlength: 8*/ },
     number: { type:String, required: true, unique: true/*, minlength: 3*/ }
 })
+
 personSchema.plugin(uniqueValidator)
 
 personSchema.set('toJSON', {
